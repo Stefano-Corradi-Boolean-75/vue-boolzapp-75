@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Luxon -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.3/build/global/luxon.min.js"></script>
+    <!-- VueJs -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <title>Boolzapp</title>
+</head>
+
+<body>
+<div id="app" class="container">
+    <!-- contenitore sx -->
+    <div class="left">
+        <div class="header-left">
+            <div class="header-left-logo">
+                <img :src="`img/avatar${user.avatar}.jpg`" :alt="user.name" >
+                <span>{{user.name}}</span>
+            </div>
+            <div class="header-left-icons">
+                <i class="fas fa-circle-notch"></i>
+                <i class="fas fa-comment-alt"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+        <div class="left-disclaimer">
+            <div class="left-disclaimer-logo">
+                <i class="fa fa-bell-slash" aria-hidden="true"></i>
+            </div>
+            <div class="left-disclaimer-text">
+                <h3>Ricevi notifiche di nuovi messaggi</h3>
+                <a href="#">Attiva notifiche desktop</a>
+            </div>
+        </div>
+        <div class="left-searchbar">
+            <label class="search-label" for="search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </label>
+            <input
+            v-model="strToSearch"
+            @keyup="search()"
+            id="contacts-filter"  class="left-searchbar-input" placeholder="Cerca o inizia una nuova chat"
+            name="search">
+        </div>
+
+        <!-- contacts -->
+        <div class="contacts">
+
+            <!-- contact (v-for) -->
+            <div
+            v-for="contact in contacts"
+            v-show="contact.visible"
+            @click="activeContact = contact"
+            :class="{'active': activeContact === contact}"
+            class="contact">
+                <div class="contact-logo">
+                    <img :src="`img/avatar${contact.avatar}.jpg`" :alt="contact.name">
+                </div>
+                <div class="contact-info">
+                    <h3>
+                        <span class="contact-name">{{contact.name}}</span>
+                        <span class="time f-right">{{getLastDate(contact)}}</span>
+                    </h3>
+                    <small>{{getLastMessage(contact)}}</small>
+                  
+                </div>
+            </div>
+
+        </div>
+        <!-- /contacts -->
+    </div>
+    <!-- /contenitore sx -->
+    <!-- contenitore dx -->
+    <div class="right">
+        <div class="header-right">
+            <div class="header-right-logo">
+                <img :src="`img/avatar${activeContact.avatar}.jpg`" alt="">
+                <h3><span id="header-right-contact-name">{{activeContact.name}}</span> <br>
+                  <small class="time">Ultimo messaggio oggi alle {{getLastDate(activeContact)}} </small></h3>
+            </div>
+            <div class="header-right-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-paperclip"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+        <div class="right-messages-container">
+
+            <!-- contenitore messaggi -->
+            <div class="right-messages">
+
+                <!-- messaggio -->
+                <div
+                v-for="message in activeContact.messages"
+                :class="message.status"
+                class="message">
+                    <div class="message-text">{{message.message}}</div>
+                    <div class="message-time">{{message.date}}</div>
+
+                    <!-- inizializzo il messaggio attivo -->
+                    <i
+                     @click="activeMessage = message"
+                    class="fa fa-chevron-down f-right message-options"></i>
+
+                    <!-- mostro la tendina solo se il messaggio è il messaggio attivo -->
+
+                    <!-- on mouseleave resetto il messaggio attivo nascondendo quindi la tendina -->
+                     <div 
+                     v-if="activeMessage === message"
+                     @mouseleave="activeMessage = {}"
+                     class="message-options-panel" >
+                        <div class="message-info">Info messaggio</div>
+                        <div
+                        @click="removeMsg()"
+                        class="message-destroy">Cancella messaggio</div> 
+                </div>
+                <!-- //messaggio -->
+
+
+               
+            </div>
+            <!-- //contenitore messaggi -->
+
+        </div>
+        <div class="right-footer">
+            <div class="right-footer-icon f-left">
+                <i class="far fa-smile"></i>
+            </div>
+            <input
+            v-model.trim="msgString"
+            @keyup.enter="sendMsg()"
+            class="new-message-inputs" placeholder="Scrivi un messaggio">
+            <div class="right-footer-icon f-right">
+                <i class="fa fa-microphone" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+    <!-- /contenitore dx -->
+</div>
+
+<script src="main.js"></script>
+</body>
+
+</html>
